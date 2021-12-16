@@ -261,3 +261,302 @@ def fct_fac(n):
 f2 = fct_fac(2)
 f2(4)
 # >> 16
+
+# [map 함수]
+
+# 기존 방식
+
+
+def pow(n):
+    return n ** 2        # n의 제곱 값을 계산해서 반환
+
+
+st1 = [1, 2, 3]
+st2 = [pow(st1[0]), pow(st1[1]), pow(st1[2])]  # 값을 일일히 넣어서 반환
+
+# >> [1,4,9]
+
+# map 함수 사용시
+
+st2 = list(map(pow, st1))
+# >> [1,4,9]
+
+st = [1, 2, 3]
+ir = map(pow, st)
+for i in ir:            # ir 은 iterator 객체이므로 for 루프에 올 수 있음
+    print(i, end=' ')   # iterator 객체는 iterable
+
+
+def dbl(e):
+    return e * 2
+
+
+list(map(dbl, (1, 3, 4)))              # 튜플 (1,3,4)를 map에 전달
+# >> [2,6,8]
+list(map(dbl, 'hello'))             # 문자열 'hello'를 map에 전달
+# >> ['hh', 'ee', 'll', 'll', 'oo']
+
+
+# 인자가 2개 이상일 경우 map함수의 사용
+def sum(n1, n2):
+    return n1 + n2          # 인자가 2개 인 함수
+
+
+st1 = [1, 2, 3]
+st2 = [3, 2, 1]
+
+st3 = list(map(sum, st1, st2))
+# >> [4, 4, 4]
+
+# 일반적인 슬라이싱 연산
+
+st = [1, 2, 3, 4, 5, 6, 7, 8]
+st[:]                           # 처음부터 끝까지 모든 값을 꺼내서 리스트 생성
+# >> [1, 2, 3, 4, 5, 6, 7, 8]
+st[::1]                         # 처음부터 끝까지 한 칸씩 뛰면서 값을 꺼내 리스트 생성
+# >> [1, 2, 3, 4, 5, 6, 7, 8]
+st[::2]                         # 처음부터 끝가지 두 칸씩 뛰면서 값을 꺼내 리스트 생성
+# >> [1, 3, 5, 7]
+st[::3]                         # 처음부터 끝까지 세 칸씩 뛰면서 값을 꺼내 리스트 생성
+# >> [1, 4, 7]
+
+
+# map 함수를 사용한 reverse
+
+def rev(s):                 # 전달된 내용(s)의 순서를 뒤집어서 반환하는 함수
+    return s[::-1]
+
+
+st = ['one', 'two', ' three']
+rst = list(map(rev, st))
+# >> ['eno', 'owt', 'eerht']
+
+# 람다식
+
+rst = list(map(lambda x: x[::-1], st))  # 상위 예제보다 훨씬 간결해보이며,
+# >> ['eno', 'owt', 'eerht']            # 별도의 함수를 정의하지 않아도 된다.
+
+
+# [filter 함수]
+
+def is_odd(n):
+    return n % 2    # 홀수이면 True 반환
+
+
+st = [1, 2, 3, 4, 5]
+ost = list(filter(is_odd, st))
+# >> [1, 3, 5]
+
+# 람다식을 사용한 filter 이용
+
+st1 = [1, 2, 3, 4, 5]
+ost = list(filter(lambda x: x % 2, st))  # 홀수값만 필터
+# >> [1, 3, 5]
+
+st = list(range(1, 11))
+fst = list(filter(lambda x: not(x % 3), st))  # 3의 배수만 반환
+# >> [3, 6, 9]
+
+st = list(range(1, 11))
+fst = list(filter(lambda n: not(n % 3), map(lambda n: n**2, st)))
+# >> [9, 36, 81]         map함수부분에서 제곱된 반환 값을 객체(iterable)로 받아,
+#                        3의 배수가 아닌 것을 필터한 값을 반환
+
+
+# [두 함수를 대신하는 리스트 컴프리 헨션]
+
+# map과 filter를 대신하는 리스트 컴프리헨션
+
+# map 예제
+st1 = [1, 2, 3]
+st2 = list(map(lambda n: n**2, st1))
+# >> [1, 4, 9]
+
+# map 예제 리스트 컴프리헨션
+st1 = [1, 2, 3]
+st2 = [n**2 for n in st1]
+# >> [1, 4, 9]
+
+# filter 예제
+st = [1, 2, 3, 4, 5]
+ost = list(filter(lambda n: n % 2, st))
+# >> [1, 3, 5]
+
+# filter 예제 리스트 컴프리헨션
+st = [1, 2, 3, 4, 5]
+ost = [n for n in st if n % 2]
+# >> [1, 3, 5]
+
+# map & filter 예제
+st = list(range(1, 11))
+fst = list(map(lambda n: n**2, filter(lambda n: n % 2, st)))
+# >> [1, 9, 25, 49, 81]
+
+# map & filter 예제 리스트 컴프리헨션
+fst = [n**2 for n in st if n % 2]
+# >> [1, 9, 25, 49, 81]
+
+# 함수 기반 제너레이터 예
+
+
+def gen_num():                  # 제너레이터 함수의 정의
+    print('fist number')
+    yield 1                     # yield가 하나라도 들어가면 제너레이터가 된다.
+    print('second number')
+    yield 2
+    print('third number')
+    yield 3
+
+
+gen = gen_num()                 # 제너레이터 객체 생성
+type(gen)
+# >> <class 'generator'>
+next(gen)
+# >> first number
+# >> 1
+next(gen)
+# >> second number
+# >> 2
+
+# [제너레이터 함수 직접 전달]
+
+# 비교를 위한 예제 - 제너레이터 표현식을 직접 전달
+
+
+def show_all(s):
+    for i in s:
+        print(i, end='')
+
+
+show_all((2*i for i in range(1, 10)))
+
+# 제너레이터 함수 실행시
+show_all(2*i for i in range(1, 10))
+
+
+# [튜플 패킹과 언패킹]
+
+# 튜플패킹
+
+tri_one = (12, 15)      # 밑변 길이 12와 높이 길이 15를 묶어 놓은것
+tri_two = 23, 12        # 튜플 패킹은 소괄호가 없어도 된다.
+# >> (23, 12)
+
+# 튜플 언패킹 / 단, 튜플 언패킹 진행시에는 저장된 값의 수와 이를 저장할 변수의 수가 일치해야한다.
+
+tri_three = (12, 25)
+bt, ht = tri_three      # 튜플 언패킹
+# >> bt = 12 , ht = 25
+
+# 언패킹시 둘 이상의 값을 리스트로 묶어서 하나의 변수에 저장
+
+nums = (1, 2, 3, 4, 5)
+n1, n2, *others = nums      # 둘 이상의 값을 리스트로 묶을 때 *를 사용한다.
+# n1 = 1
+# n2 = 2
+# others = [3,4,5]          # 튜플이 아닌 리스트로 묶인다.
+
+first, *others, last = nums
+# first = 1
+# others = [2,3,4]
+# last = 5
+
+# 언패킹은 리스트 대상으로도 동일하게 작동
+
+nums = [1, 2, 3, 4, 5]
+n1, n2, *others = nums      # 리스트도 언패킹 됨.
+# n1 = 1
+# n2 = 2
+# others = [3, 4, 5]
+
+# 함수 호출 및 반환 과정에서의 패킹과 언패킹
+
+
+def ret_nums():
+    return 1, 2, 3, 4, 5        # 튜플의 소괄호가 생략된 형태,
+
+
+    # 즉 패킹되어 반환
+nums = ret_nums()
+# >> (1, 2, 3, 4, 5)
+
+n, *others = ret_nums()         # 반환값이 언패킹 되어 변수들에 저장
+# n = 1
+# others = [2, 3, 4, 5]         # 리스트로 패킹된다는 점.
+
+# 매개변수 선언
+
+
+def show_nums(n1, n2, *others):         # 세 번째 이후의 값드은 튜플로 묶여 other에 전달
+    print(n1, n2, others, sep=', ')
+
+
+show_nums(1, 2, 3, 4)
+# >> 1, 2, (3, 4)
+show_nums(1, 2, 3, 4, 5)
+# >> 1, 2, (3, 4, 5)
+
+
+def sum(*nums):     # 전달되는 모든 값들을 하나의 튜플로 묶어서 nums에 저장
+    s = 0
+    for i in nums:
+        s += i
+    return s
+
+
+sum(1, 2, 3)
+# >> 6
+
+# *의 함수호출시 사용
+
+
+def show_man(name, age, height):
+    print(name, age, height, sep=', ')
+
+
+p = ('Yoon', 22, 180)
+show_man(*p)            # p 에 담긴 값을 풀어서 각각의 매개변수에 전달
+# >> Yoon, 22, 180
+
+p = ['Park', 21, 177]   # 리스트도 가능하다.
+show_man(*p)
+# >> Park, 21, 177
+
+# 튜플 안의 튜플 언패킹
+t = (1, 2, (3, 4))  # 튜플 안의 튜플
+a, b, (c, d) = t     # 튜플 안의 값의 구조와 동일한 형태로 변수를 선언
+# a=1
+# b=2
+# c=3
+# d=4
+
+p = 'Hong', (32, 178), '010-1234-56xx', 'korea'  # 튜플의 소괄호 생략
+na, (ag, he), ph, ad = p
+# na = Hong
+# ag = 32
+# he = 178
+# ph = 010-1234-56xx
+# ad = korea
+
+# 특정 값만 가져오기
+na, (_, he), _, _ = p
+# na = Hong
+# he = 178
+
+# [for 루프에서의 언패킹]
+
+ps = [('Lee', 172), ('Jung', 182), ('Yoon', 179)]   # 리스트 안의 튜플
+for n, h in ps:
+    print(n, h, sep=', ')
+
+# Lee, 172
+# Jung, 182
+# Yoon, 179
+
+ps = (['Lee', 172], ['Jung', 182], ['Yoon', 179])   # 튜플에 담긴 리스트
+for n, h in ps:
+    print(n, h, sep=', ')
+
+# Lee, 172
+# Jung, 182
+# Yoon, 179
