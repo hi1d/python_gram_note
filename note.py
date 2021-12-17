@@ -1,4 +1,6 @@
 # [리스트 기본 생성 방법]
+from collections import namedtuple
+import sys
 r1 = [1, 2, 3]          # 리스트를 생성하는 가장 일반적인 방법
 r2 = []                 # 빈 리스트를 생성하는 방법
 r3 = [1, 2, [3, 4]]     # 리스트가 포함된 리스트를 생성하는 방법
@@ -380,6 +382,8 @@ st2 = [n**2 for n in st1]
 # filter 예제
 st = [1, 2, 3, 4, 5]
 ost = list(filter(lambda n: n % 2, st))
+
+
 # >> [1, 3, 5]
 
 # filter 예제 리스트 컴프리헨션
@@ -417,6 +421,97 @@ next(gen)
 next(gen)
 # >> second number
 # >> 2
+
+# 일반적인 예제
+
+
+def pows(s):
+    r = []
+    for i in s:
+        r.append(i ** 2)
+    return r
+
+
+st = pows([1, 2, 3, 4, 5, 6, 7, 8, 9])
+for i in st:
+    print(i, end=' ')
+# >> 1 4 9 16 25 36 49 64 81
+sys.getsizeof(st)
+# >> 200
+
+# 제너레이터 함수 사용시
+
+
+def gpows(s):
+    for i in s:
+        yield i ** 2
+
+
+st = gpows([1, 2, 3, 4, 5, 6, 7, 8, 9])
+for i in st:
+    print(i, end=' ')
+# >> 1 4 9 16 25 36 49 64 81
+sys.getsizeof(st)
+# >> 128           메모리 공간을 적게 사용하는 것을 확인 할 수 있다.
+
+# [yield from]
+
+# [제너레이터 표현식]
+
+
+def show_all(s):
+    for i in s:
+        print(i, end=' ')
+
+
+st = [2 * i for i in range(1, 10)]
+print(type(st))
+show_all(st)
+# >> 2 4 6 8 10 12 14 16 18
+
+# 제너레이터 함수
+
+
+def times2():               # 제너레이터 함수의 정의
+    for i in range(1, 10):
+        yield 2 * i
+
+
+g = times2()                # 제너레이터 객체의 생성
+show_all(g)
+# >> 2 4 6 8 10 12 14 16 18
+
+# 제너레이터 표현식
+g = (2 * i for i in range(1, 10))
+show_all(g)
+# >> 2 4 6 8 10 12 14 16 18
+
+
+def two():
+    print('two')
+    return 2
+
+
+g = (two() * i for i in range(1, 10))
+next(g)
+# >> two
+# >> 2
+next(g)
+# >> two
+# 4
+
+
+def get_nums():
+    ns = [0, 1, 0, 1, 0, 1]
+    for i in ns:
+        yield i
+
+# yield from 사용시
+
+
+def get_nums():
+    ns = [0, 1, 0, 1, 0, 1]
+    yield from ns
 
 # [제너레이터 함수 직접 전달]
 
@@ -560,3 +655,48 @@ for n, h in ps:
 # Lee, 172
 # Jung, 182
 # Yoon, 179
+
+# [네임드 튜플]
+
+# 튜플의 패킹
+tri_one = (12, 15)
+
+# 네임드 튜플 생성
+Tri = namedtuple('Triangle', ['bottom', 'height'])  # 네임드 튜플 클래스 만듬
+t = Tri(3, 7)       # 네임드 튜플 객체 생성
+print(t[0], t[1])
+# 3 7
+print(t.bottom, t.height)
+# 3 7
+
+# t[0] = 15
+
+# 클래스의 이름과 변수의 이름을 동일하게 하는 것을 권장
+Tri = namedtuple('Tri', ['bottom', 'height'])
+
+
+# [네임드 튜플 언패킹]
+t = Tri(12, 79)     # 네임드 튜플 객체 생성
+# a, b = Tri          # 언패킹
+print(a, b)
+# 12 79
+
+# [dict의 생성과 zip]
+# dict의 다양한 생성방법
+# 기본적인 방법
+d = {'a': 1, 'b': 2, 'c': 3}
+
+# dict함수와 리스트를 사용한 방법
+d = dict([('a', 1), ('b', 2), ('c', 3)])
+print(d)
+# >> {'a': 1, 'b': 2, 'c': 3}
+
+# 문자열의 경우 사용할 수 있는 방법
+d = dict(a=1, b=2, c=3)
+print(d)
+# >> {'a': 1, 'b': 2, 'c': 3}
+
+# 키는 키끼리 값은 값끼리 리스트에 묶어서 생성하는 방법
+d = dict(zip(['a', 'b', 'c'], [1, 2, 3]))
+print(d)
+# >> {'a': 1, 'b': 2, 'c': 3}
