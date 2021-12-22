@@ -1,6 +1,11 @@
 # [리스트 기본 생성 방법]
+from collections import OrderedDict
+from collections import defaultdict
+import time
+import random
 from collections import namedtuple
 import sys
+from typing import OrderedDict
 r1 = [1, 2, 3]          # 리스트를 생성하는 가장 일반적인 방법
 r2 = []                 # 빈 리스트를 생성하는 방법
 r3 = [1, 2, [3, 4]]     # 리스트가 포함된 리스트를 생성하는 방법
@@ -729,3 +734,301 @@ d = dict(zip(['a', 'b', 'c'], (1, 2, 3)))
 # 3 개 이상의 zip
 c = list(zip('abc', (1, 2, 3), ['one', 'two', 'three']))
 # >> [('a',1,'one'), ('b',2,'two'), ('c',3,'three')]
+
+
+# dict의 루핑 기술과 컴프리헨션
+# [딕셔너리 루핑 테크닉]
+
+# 보편적인 for 루프 구성
+d = dict(a=1, b=2, c=3)
+for k in d:
+    print(d[k], end=', ')
+# >> 1, 2, 3
+
+# keys 메소드
+d = dict(a=1, b=2, c=3)
+for k in d.keys():
+    print(k, end=', ')
+# > a, b, c
+
+# values 메소드
+d = dict(a=1, b=2, c=3)
+for v in d.values():
+    print(v, end=', ')
+# > 1, 2, 3
+
+# items 메소드
+d = dict(a=1, b=2, c=3)
+for kv in d.items():
+    print(kv, end=', ')
+# > ('a', 1), ('b', 2), ('c', 3)
+
+# items 메소드를 사용한 튜플 언패킹
+d = dict(a=1, b=2, c=3)
+for k, v in d.items():
+    print(k, v, sep=', ')
+# > a, 1
+# > b, 2
+# > c, 3
+
+# [뷰가 바라보는 현재 상태]
+d = dict(a=1, b=2, c=3)
+vo = d.items()		# 뷰 객체
+for kv in vo:
+    print(kv, end=' ')
+('a', 1), ('b', 2), ('c', 3)
+d['a'] += 3		# 딕셔너리 수정
+d['c'] -= 2 		# 딕셔너리 수정
+for kv in vo:		# 수정 사항이 뷰 객체에 그대로 반영
+    print(kv, end=' ')
+# ('a', 4), ('b', 2), ('c', 1)
+
+# [dict 컴프리헨션]
+# 리스트 컴프리헨션의 기본 구조
+
+r1 = [1, 2, 3, 4, 5]
+r2 = [x * 2 for x in r1]
+# > [2, 4, 6, 8, 10]
+
+# 딕셔너리 컴프리헨션
+
+d1 = dict(a=1, b=2, c=3)
+d2 = {k: v*2 for k, v in d1.items()} 	# d1의 값을 두 배 늘린 딕셔너리 생성
+d3 = {k: v*2 for k, v in d2.items()}  # d2의 값을 두 배 늘린 딕셔너리 생성
+# > d1
+# {'a': 1, 'b': 2, 'c': 3}
+# > d2
+# {'a': 2, 'b': 4, 'c': 6}
+# > d3
+# {'a': 4, 'b': 8, 'c': 12}
+
+# 조건문이 추가된 컴프리헨션
+
+d1 = dict(a=1, b=2, c=3)
+d2 = {k: v for k, v in d1.items() if v % 2}
+# > {'a':1, 'c': 3}
+
+# zip을 사용한 컴프리헨션
+
+ks = ['a', 'b', 'c', 'd']		# 키
+vs = [1, 2, 3, 4]				# 값
+d = {k: v for k, v in zip(ks, vs)}  # zip을 이용해서 같은 위치의 값들을 묶어준다.
+# > {'a':1, 'b':2, 'c':3, 'd': 4}
+ks = ['a', 'b', 'c', 'd']
+vs = [1, 2, 3, 4]
+d = {k: v for k, v in zip(ks, vs) if v % 2}
+# > {'a':1, 'c':3}
+
+# [함수 호출과 매개변수 선언에 있어서 * 와 **의 사용규칙]
+# [iteralbe 객체와 매개변수]
+
+
+def who(a, b, c):
+    print(a, b, c, sep=', ')
+
+
+who(*[1, 2, 3])				# 리스트를 풀어서 매개변수에 각각 전달
+# > 1, 2, 3
+who(*(0.1, 0.2, 0.3))			# 튜플을 풀어서 매개변수에 각각 전달
+# > 0.1, 0.2, 0.3
+who(*'abc') 				# 문자열을 풀어서 매개변수에 각각 전달
+# > a, b, c
+d = dict(a=1, b=2, c=3)
+who(*d)					# *을 붙이면 키가 매개변수에 전달
+# > a, b, c
+who(**d)				# **을 붙이면 값이 매개변수에 전달
+# > 1, 2, 3
+
+# 딕셔너리 키와 값을 동시에 전달
+
+
+def who(a, b, c):
+    print(a, b, c, sep=', ')
+
+
+d = dict(a=1, b=2, c=3)
+who(*(d.items()))			# items 함수를 호출하여 뷰 객체로 전달
+# > ('a', 1), ('b', 2), ('c', 3)
+
+
+# 딕셔너리와 매개변수
+
+def func(*args):		# 튜플
+    print(args)
+
+
+func()
+# > ()
+func(1)
+# > (1, )
+func(1, 2)
+# > (1, 2)
+func(1, 2, 3)
+# > (1, 2, 3)
+
+
+def func(**args):
+    print(args)		# 딕셔너리
+    print(args)
+
+
+func(a=1)
+# > {'a': 1}
+func(a=1, b=2)
+# > {'a':1, 'b':2}
+func(a=1, b=2, c=3)
+# > {'a':1, 'b':2, 'c':3}
+
+
+def func(*args1, **args2):
+    print(args1)        # 튜플
+    print(args2)        # 딕셔너리
+
+
+func()
+# > ()
+# > {}
+func(1, a=1)
+# > (1,)
+# > {'a':1}
+func(1, 2, a=1, b=2)
+# > (1, 2)
+# > {'a':1, 'b':2}
+
+# [dict & defaultdict]
+# 키가 존재하는 경우(수정)
+
+d = {'red': 3, 'white': 2, 'blue': 4}
+d['red'] = 1				# 값이 수정
+# > {'red':1, 'white':2, 'blue':4}
+
+# 키가 존재하지 않는 경우(추가)
+
+d = {'white': 2, 'blue': 4}
+d['red'] = 1				# 값이 추가
+# > {'white':2, 'blue':4, 'red':1}
+
+# 저장되어 있는 값을 참조하는 경우
+# 키가 존재할 때
+
+d = {'red': 3, 'white': 2, 'blue': 4}
+d['red'] += 1
+# > {'red':4, 'white':2, 'blue':4 }
+
+# 키가 존재하지 않을 때
+
+d = {'white': 2, 'blue': 4}
+d['red'] = 1
+# > KeyError: 'red'
+
+# 상황 별 실행
+
+s = 'robbot'
+d = {}
+for k in s:
+    if k in d:				# 키가 존재할 경우
+        d[k] += 1
+    else:					# 키가 없을 경우
+        d[k] = 1
+# > {'r':1, 'o':2, 'b':2, 't':1}
+
+# Set Default 메서드
+
+# setdefualt 메서드
+
+s = 'robbot'
+d = {}
+for k in s:
+    d[k] = d.setdefault(k, 0) + 1
+# > { 'r':1, 'o':2, 'b':2, 't':1 }
+
+# default dict
+s = 'robbot'
+d = defaultdict(int)		# int 함수를 등록하면서 defaultdict 호출
+for k in s:
+    d[k] += 1
+# > defaultdict(<class 'int'>, {'r':1, 'o':2, 'b':2, 't':1})
+print(d['r'], d['o'], d['b'], d['t'], sep=', ')
+# > 1, 2, 2, 1
+
+# 번외 - int함수
+
+n1 = int('36')
+# > 36		# 문자열을 정수로 변환해서 반환
+n2 = int()
+# > 0		# 아무 값도 전달되지 않으면 0을 반환
+# 다른 방법 - 0 반환 함수 생성
+
+
+def ret_zero():
+    return 0
+
+
+d = defaultdict(ret_zero)
+d['a']		# 해당 키가 없으므로 이 순간 'a':0 이 등록.
+# > 0
+d
+# > defaultdict(<function ret_zero at 0x5315315>, {'a':0}
+
+# 다른 방법 lambda 이용
+
+d = defaultdict(lambda: 7)
+d['z']
+# > 7
+d
+# > defaultdict(<function <lambda> at 0x5315315>, {'z':7})
+
+# [dict & OrderedDict]
+
+d = {}
+d['a'] = 1
+d['b'] = 2
+d['c'] = 3
+d
+# > {'a' : 1, 'b' : 2, 'c' : 3}
+for kv in d.items():
+    print(kv)
+# > ('a',1)
+# > ('b',2)
+# > ('c',3)
+# 딕셔너리는 순서를 정보(information)로 받아들이지 않는다.
+
+# { a = 1, b = 2, c = 3 } = { b = 2, c = 3, a = 1}
+
+# [Ordered Dict]
+od = OrderedDict()		# OrderedDict 객체 생성
+od['a'] = 1
+od['b'] = 2
+od['c'] = 3
+od
+# > OrderedDict([('a',1),('b',2),('c',3)])
+for kv in od.items():  # 딕셔너리와 마찬가지로 items 메소드 호출 가능
+    print(kv)
+# > ('a',1)
+# > ('b',2)
+# > ('c',3)
+# OrderedDict은 순서를 정보로 받아들인다.
+
+# [dict]
+
+d1 = dict(a=1, b=2, c=3)
+d2 = dict(c=3, a=1, b=2)
+d1 == d2
+# > True
+
+# [OrderedDict]
+
+od1 = OrderedDict(a=1, b=2, c=3)
+od2 = OrderedDict(c=3, a=1, b=2)
+od1 == od2
+# > False
+# 위와 같이 dict과 OrderedDict의 차이점은 저장 순서를 정보로 받아들이는지에 대한 유무이다.
+
+od = OrderedDict(a=1, b=2, c=3)
+for kv in od.items():
+    print(kv, end=' ')
+# > ('a',1) ('b',2) ('c',3)
+od.move_to_end('b', last=False)  # 키가 'b'인 키와 값을 맨뒤로 이동
+for kv in od.items():
+    print(kv, end=' ')
+# > ('b',2) ('a',1) ('c',3)
